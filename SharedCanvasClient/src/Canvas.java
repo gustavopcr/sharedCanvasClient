@@ -3,20 +3,26 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-
 import javax.swing.JFrame;
-
 
 public class Canvas extends JFrame{
 	boolean mPressed = false;
+	TCPHandler tcp;
 	
 	public Canvas() {
 		
+		tcp = new TCPHandler("localhost", 9999);
 		
 		addMouseListener(new MouseListener(){
+			
+			/* drawings.clear() está tanto no released quanto pressed pois os diferentes clients não executam essas ações em sincronia, logo
+			 * é preciso manter drawings sempre clear para nao traçar o desenho de um ponto diferente do mouse.
+			 */
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				mPressed = false;
+				drawings.clear();
+				
 			}
 			
 			@Override
@@ -41,8 +47,10 @@ public class Canvas extends JFrame{
 			}
 		});
 		
-		new Time().start();
-		
+		Thread sendThread = new Thread(new Send());
+        sendThread.start();
+        Thread receiveThread = new Thread(new Receive());
+        receiveThread.start();
 		setSize(1200, 900);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -65,6 +73,7 @@ public class Canvas extends JFrame{
 			int y1 = drawings.get(i).y;
 			int x2 = drawings.get(i-1).x;
 			int y2 = drawings.get(i-1).y;
+			
 			g.drawLine(x2, y2, x1, y1);
 		}
 	}
@@ -73,17 +82,40 @@ public class Canvas extends JFrame{
 		new Canvas();
 	}
 
-	public class Time extends Thread {
-		public void run() {
-			while(true) {
-				if(mPressed) {
-					try {
-					Point p = getMousePosition();
-					drawings.add(new Drawing(p.x, p.y));
-					}catch(Exception e) {};
-				}
-				repaint();	
-			}
-		}
-	}
+    public class Send implements Runnable {
+        @Override
+        public void run() {
+            while (true) {
+                if (mPressed) {
+                    try {
+                        Point p = getMousePosition();
+                        //drawings.add(new Drawing(p.x, p.y));
+                        tcp.sendData(p.x, p.y);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                repaint();
+
+                try {
+                    Thread.sleep(10); // Optional delay to reduce CPU usage
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    public class Receive implements Runnable {
+        
+        int[] data;
+        @Override
+        public void run() {
+        	while(true) {
+	        	if( ( data = tcp.receiveData(2) ) != null) {
+	        		drawings.add(new Drawing(data[0], data[1]));
+	        	}	
+        	}
+        }
+    }
 }
