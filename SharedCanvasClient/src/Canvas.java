@@ -11,8 +11,8 @@ public class Canvas extends JFrame{
 	
 	public Canvas() {
 		
-		tcp = new TCPHandler("localhost", 9999);
-		
+		//tcp = new TCPHandler("localhost", 9999);
+		tcp = new TCPHandler();
 		addMouseListener(new MouseListener(){
 			
 			/* drawings.clear() está tanto no released quanto pressed pois os diferentes clients não executam essas ações em sincronia, logo
@@ -20,15 +20,14 @@ public class Canvas extends JFrame{
 			 */
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				mPressed = false;
 				drawings.clear();
-				
+				mPressed = false;				
 			}
 			
 			@Override
 			public void mousePressed(MouseEvent e) {
-				mPressed = true;
 				drawings.clear();
+				mPressed = true;
 			}
 			
 			@Override
@@ -51,6 +50,7 @@ public class Canvas extends JFrame{
         sendThread.start();
         Thread receiveThread = new Thread(new Receive());
         receiveThread.start();
+		
 		setSize(1200, 900);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);

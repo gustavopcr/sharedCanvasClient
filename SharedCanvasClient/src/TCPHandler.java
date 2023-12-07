@@ -8,7 +8,21 @@ public class TCPHandler {
 	private Socket socket;
 	private OutputStream outToServer;
 	private InputStream inFromServer;
+	public static String server;
+	public static int port;
 	
+	public TCPHandler() {
+		try {
+			
+			this.socket = new Socket(server, port);
+			this.outToServer = socket.getOutputStream();
+			this.inFromServer = socket.getInputStream();
+			System.out.println("Server: " + server);
+			System.out.println("Port: " + port);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public TCPHandler(String server, int port){
 		try {
@@ -22,6 +36,7 @@ public class TCPHandler {
 		}
 	}
 	
+
 	public void sendData(int x, int y) {
 		byte[] bytesToSend = intArrayToBytes(new int[]{x, y});
 		try {
