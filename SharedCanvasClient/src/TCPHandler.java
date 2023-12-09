@@ -55,6 +55,32 @@ public class TCPHandler {
 	            // Convert bytes back to individual integers
 	            int[] receivedIntegers = bytesToIntArray(receivedBytes);
 	            // Print received integers
+	            //System.out.print("Received integers: ");
+	            /*
+	            for (int num : receivedIntegers) {
+	                System.out.print(num + " ");
+	            }
+	            */
+	            System.out.println();
+	            return receivedIntegers;
+	        } else {
+	            System.out.println("Insufficient bytes received for n integers.");
+	        }
+        }catch(Exception e) {
+        	e.printStackTrace();
+        }
+		return null;
+	}
+	
+	public int[] syncData(int n) {
+		byte[] receivedBytes = new byte[4*n]; // Adjust buffer size as needed
+		try {
+			
+			int bytesRead = inFromServer.read(receivedBytes); // Read bytes into the buffer
+	        if (bytesRead == Integer.BYTES * n) {
+	            // Convert bytes back to individual integers
+	            int[] receivedIntegers = bytesToIntArray(receivedBytes);
+	            // Print received integers
 	            System.out.print("Received integers: ");
 	            for (int num : receivedIntegers) {
 	                System.out.print(num + " ");
