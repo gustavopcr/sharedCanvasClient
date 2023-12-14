@@ -9,12 +9,20 @@ public class Canvas extends JFrame {
     ArrayList<Drawing> drawings = new ArrayList<>();
     TCPHandler tcp = new TCPHandler("localhost", 9999);
     UDPHandler udp = new UDPHandler(9008);
+    public static String title = "";
+    
+    public static void setTitle(String s, Canvas c) {
+    	c.setTitle(s);
+    }
     public Canvas() {
         addMouseListener(new MyMouseListener());
         addMouseMotionListener(new MyMouseListener());
 
         Thread receiveThread = new Thread(new Receive());
         receiveThread.start();
+        
+        //Thread receiveUDPThread = new Thread(new ReceiveUDP());
+        //receiveUDPThread.start();
 
         setSize(1200, 900);
         setLocationRelativeTo(null);
@@ -42,7 +50,7 @@ public class Canvas extends JFrame {
     }
 
     public static void main(String[] args) {
-        new Canvas();
+        Canvas c = new Canvas();
     }
     
     public class Receive implements Runnable {
@@ -55,6 +63,18 @@ public class Canvas extends JFrame {
                     drawings.add(new Drawing(data[0], data[1]));
                 }
                 repaint();
+            }
+        }
+    }
+    
+    public class ReceiveUDP implements Runnable {
+        
+        @Override
+        public void run() {
+            while (true) {
+            	//System.out.println("alo");
+            	//String usuarios = udp.receiveData();
+                //System.out.println("usuario: " + udp.receiveData());
             }
         }
     }
