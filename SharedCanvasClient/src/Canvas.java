@@ -1,5 +1,4 @@
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
@@ -9,7 +8,7 @@ public class Canvas extends JFrame {
     boolean mPressed = false;
     ArrayList<Drawing> drawings = new ArrayList<>();
     TCPHandler tcp = new TCPHandler("localhost", 9999);
-
+    UDPHandler udp = new UDPHandler(9008);
     public Canvas() {
         addMouseListener(new MyMouseListener());
         addMouseMotionListener(new MyMouseListener());
